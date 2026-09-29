@@ -40,13 +40,18 @@ manual runs. It checks the Netlify publish directory, the fallback page, and
 redirect rules (explicit paths, duplicate paths, HTTPS destinations, redirect
 status codes, and destinations pointing back to this redirector).
 
-Run the same check locally with Python 3.11 or newer:
+The validator is JavaScript using only Node.js built-ins. No package installation
+is needed. CI uses Node.js 24, recorded in `.nvmrc`.
+Run the same checks locally:
 
 ```sh
-python3 scripts/validate.py
+node --test scripts/validate.test.mjs
+node scripts/validate.mjs
 ```
 
 Rules currently support three fields only, with literal paths such as
 `/food-market` and external HTTPS destinations. Expand the validator if advanced
 Netlify rules are needed. CI checks configuration without contacting destination
 sites; it does not deploy or gate Netlify's automatic deployments.
+The configuration check accepts only the minimal `[build]` / `publish = "public"`
+settings currently in `netlify.toml`; expand it before adding other Netlify settings.
