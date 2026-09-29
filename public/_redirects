@@ -1,0 +1,3 @@
+# Add one redirect per line: source path, destination URL, HTTP status.
+/food-market https://app.thebaycompassion.org 302
+/ https://app.thebaycompassion.org 302
