@@ -19,6 +19,20 @@ a directory of ministry links later. Use a separate descriptive path for each mi
 Use `302` for links whose destinations may change. Add more lines for future links.
 Unrecognized paths return the `public/404.html` page with a 404 status.
 
+### Printed cards
+
+Print or encode `https://go.thebaycompassion.org/food-market/card` on cards.
+This redirects to the app with these attribution parameters:
+
+```text
+utm_source=printed_card&utm_medium=offline&utm_campaign=food_market
+```
+
+The app or its analytics must record these parameters on arrival, before login or
+navigation removes them. The redirector adds the tags but does not record visits.
+The general `/food-market` and `/` links do not add card attribution.
+Future sources can have their own explicit paths and destination parameters.
+
 ## Deploy
 
 1. Import this project into Netlify from a Git repository. Leave the build command
