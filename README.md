@@ -32,3 +32,21 @@ Unrecognized paths return the `public/404.html` page with a 404 status.
    `Location` header match the rule.
 
 Netlify reference: https://docs.netlify.com/manage/routing/redirects/overview/
+
+## CI
+
+GitHub Actions validates the site on pushes to `main`, every pull request, and
+manual runs. It checks the Netlify publish directory, the fallback page, and
+redirect rules (explicit paths, duplicate paths, HTTPS destinations, redirect
+status codes, and destinations pointing back to this redirector).
+
+Run the same check locally with Python 3.11 or newer:
+
+```sh
+python3 scripts/validate.py
+```
+
+Rules currently support three fields only, with literal paths such as
+`/food-market` and external HTTPS destinations. Expand the validator if advanced
+Netlify rules are needed. CI checks configuration without contacting destination
+sites; it does not deploy or gate Netlify's automatic deployments.
