@@ -1,4 +1,5 @@
 # Add one redirect per line: source path, destination URL, HTTP status.
+/food-market/flyer https://app.thebaycompassion.org?utm_source=printed_flyer&utm_medium=offline&utm_campaign=food_market 302
 /food-market/card https://app.thebaycompassion.org?utm_source=printed_card&utm_medium=offline&utm_campaign=food_market 302
 /food-market https://app.thebaycompassion.org 302
 / https://app.thebaycompassion.org 302

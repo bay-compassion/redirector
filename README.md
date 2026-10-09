@@ -33,6 +33,18 @@ navigation removes them. The redirector adds the tags but does not record visits
 The general `/food-market` and `/` links do not add card attribution.
 Future sources can have their own explicit paths and destination parameters.
 
+### Printed flyers
+
+Print or encode `https://go.thebaycompassion.org/food-market/flyer` on flyers.
+This redirects to the app with:
+
+```text
+utm_source=printed_flyer&utm_medium=offline&utm_campaign=food_market
+```
+
+This keeps flyer attribution separate from printed cards. Select
+**Food market · printed flyers** in the QR generator to download the flyer code.
+
 ### QR codes
 
 After deployment, open `https://go.thebaycompassion.org/qr/` to preview and
