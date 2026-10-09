@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>QR codes · Bay Compassion</title>
+    <link rel="stylesheet" href="./style.css">
+    <script defer src="./vendor/qrcode.js"></script>
+    <script defer src="./qr.js"></script>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">Bay Compassion</p>
+      <h1>Generate a QR code</h1>
+      <p>Choose a link, then download its QR code for your cards or flyers.</p>
+      <label for="link">Link</label>
+      <!-- Keep these paths in sync with public/_redirects. -->
+      <select id="link">
+        <option value="/food-market/card">Food market · printed cards</option>
+        <option value="/food-market">Food market · general link</option>
+        <option value="/">Home</option>
+      </select>
+      <p id="url" class="url"></p>
+      <div id="preview" aria-label="QR code preview"></div>
+      <p id="status" role="status">Loading QR code…</p>
+      <div class="downloads">
+        <button id="svg" type="button" disabled>Download SVG</button>
+        <button id="png" type="button" disabled>Download PNG</button>
+      </div>
+      <p class="note">SVG stays sharp at any print size. PNG works well in most editors.
+        Keep the white border and scan a test print before printing a batch.</p>
+      <noscript><p>Enable JavaScript to generate QR codes.</p></noscript>
+    </main>
+  </body>
+</html>
