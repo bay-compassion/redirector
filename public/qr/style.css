@@ -1,0 +1,22 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #18372d;
+  background: #f5f7f4;
+  line-height: 1.5;
+}
+* { box-sizing: border-box; }
+body { margin: 0; padding: 40px 20px; }
+main { max-width: 480px; margin: auto; }
+.eyebrow { font-weight: 650; margin-bottom: 8px; }
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 16px; }
+label { display: block; font-weight: 650; margin: 24px 0 8px; }
+select, button { font: inherit; border-radius: 6px; padding: 12px; }
+select { width: 100%; border: 1px solid #81938a; background: white; color: inherit; }
+.url { overflow-wrap: anywhere; font-size: .9rem; }
+#preview { width: min(100%, 320px); margin: 24px auto; }
+#preview svg { display: block; width: 100%; height: auto; }
+.downloads { display: flex; flex-wrap: wrap; gap: 12px; }
+button { border: 0; background: #18372d; color: white; cursor: pointer; }
+button:disabled { opacity: .5; cursor: default; }
+:focus-visible { outline: 3px solid #a8621c; outline-offset: 3px; }
+.note, #status { font-size: .9rem; }

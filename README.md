@@ -1,7 +1,7 @@
 # Bay Compassion redirector
 
 Minimal static redirect site for `go.thebaycompassion.org`, hosted on Netlify.
-No dependencies or build command are needed.
+No package installation or build command is needed.
 
 ## Redirects
 
@@ -32,6 +32,29 @@ The app or its analytics must record these parameters on arrival, before login o
 navigation removes them. The redirector adds the tags but does not record visits.
 The general `/food-market` and `/` links do not add card attribution.
 Future sources can have their own explicit paths and destination parameters.
+
+### QR codes
+
+After deployment, open `https://go.thebaycompassion.org/qr/` to preview and
+download a QR code as SVG (for print) or PNG (at least 1024 pixels wide).
+The printed-card link is selected by default. Codes encode the permanent
+`go.thebaycompassion.org` link, so you can change its destination without
+reprinting the code. Generation happens in the browser using a bundled
+MIT-licensed QR encoder; no external QR service is needed.
+
+When adding a redirect, add its source path as an option in
+`public/qr/index.html` to make it available in the generator.
+
+For a local preview, serve the static folder (opening the HTML file directly
+also works):
+
+```sh
+python3 -m http.server 8000 --directory public
+```
+
+Open `http://localhost:8000/qr/`. Local previews still encode the public domain.
+Keep the white border around downloaded codes and scan a test print before
+printing a batch.
 
 ## Deploy
 
