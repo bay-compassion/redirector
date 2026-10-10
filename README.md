@@ -36,7 +36,7 @@ Future sources can have their own explicit paths and destination parameters.
 ### Printed flyers
 
 Print or encode `https://go.thebaycompassion.org/food-market/flyer` on flyers.
-This redirects to the app with:
+This currently redirects to `https://app.thebaycompassion.org/holding` with:
 
 ```text
 utm_source=printed_flyer&utm_medium=offline&utm_campaign=food_market
