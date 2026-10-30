@@ -97,6 +97,11 @@ Netlify reference: https://docs.netlify.com/manage/routing/redirects/overview/
 ## Food-market failover
 
 The backup visitor destination is `https://qrq.app/q/dfska9L`.
+Bookmark or encode `https://go.thebaycompassion.org/food-market/backup` for
+direct access to it. This permanent backup link always points to the backup
+service, regardless of the selected mode, and is available in the QR generator
+as **Food market · backup visitor link**.
+
 Switching modes updates `/food-market`, `/food-market/flyer`,
 `/food-market/card`, `/food-market/placard`, and `/` together. QR codes keep
 their permanent URLs. Printed-source UTM parameters are retained on the backup
@@ -153,7 +158,9 @@ Run only the command for the mode you want. It validates and updates
 `public/_redirects` locally; commit, push, and deploy to activate the change.
 Normal destinations and attribution are defined in `scripts/food-market-mode.mjs`.
 Update that mapping when changing a primary destination or adding another
-food-market link, so recovery and failover continue to cover every entry point.
+food-market link that should switch modes, so recovery and failover continue to
+cover every entry point. Keep the permanent `/food-market/backup` link outside
+that mapping so it always reaches the backup service.
 This switch depends on GitHub and Netlify being available and does not move
 visitors who have already reached the app.
 

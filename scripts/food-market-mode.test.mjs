@@ -8,6 +8,7 @@ const primaryRules = `# Keep this comment
 /food-market/placard https://app.thebaycompassion.org?utm_source=printed_placard&utm_medium=offline&utm_campaign=food_market 302
 /food-market https://app.thebaycompassion.org 302
 / https://app.thebaycompassion.org 302
+/food-market/backup https://qrq.app/q/dfska9L 302
 /other-ministry https://example.org/other 307
 `;
 
@@ -17,6 +18,7 @@ test('backup switches every visitor entry point and preserves attribution and un
   const resultLines = result.trimEnd().split('\n');
   assert.equal(resultLines.length, originalLines.length);
   assert.equal(resultLines[0], originalLines[0]);
+  assert.equal(resultLines.at(-2), originalLines.at(-2));
   assert.equal(resultLines.at(-1), originalLines.at(-1));
   for (let i = 1; i <= 5; i++) {
     const [source, destination, status] = resultLines[i].split(' ');
