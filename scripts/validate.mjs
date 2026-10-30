@@ -2,7 +2,7 @@ import { readFileSync, statSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-export function validate(root) {
+export function validate(root, rules = readFileSync(join(root, 'public/_redirects'), 'utf8')) {
   // Accept only this project's minimal config rather than implementing TOML.
   const config = readFileSync(join(root, 'netlify.toml'), 'utf8')
     .split(/\r?\n/)
@@ -20,7 +20,7 @@ export function validate(root) {
   }
 
   const sources = new Set();
-  const lines = readFileSync(join(root, 'public/_redirects'), 'utf8').split(/\r?\n/);
+  const lines = rules.split(/\r?\n/);
   for (const [index, raw] of lines.entries()) {
     const line = raw.trim();
     if (!line || line.startsWith('#')) continue;

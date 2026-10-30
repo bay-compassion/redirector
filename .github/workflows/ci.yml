@@ -22,7 +22,7 @@ jobs:
         with:
           node-version-file: .nvmrc
           package-manager-cache: false
-      - name: Test validator
-        run: node --test scripts/validate.test.mjs
+      - name: Run tests
+        run: node --test scripts/*.test.mjs
       - name: Check redirect rules and publish configuration
         run: node scripts/validate.mjs
