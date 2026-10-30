@@ -5,13 +5,14 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: primary = app, backup = new QRQ queue, backup-old = old QRQ queue
+        description: primary = main app, holding = holding page, backup = new QRQ, backup-old = old QRQ
         type: choice
         required: true
         options:
           - backup
           - backup-old
           - primary
+          - holding
 
 permissions:
   contents: write
