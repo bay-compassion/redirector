@@ -5,11 +5,12 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: Destination for all food-market links (including the home link)
+        description: primary = app, backup = new QRQ queue, backup-old = old QRQ queue
         type: choice
         required: true
         options:
           - backup
+          - backup-old
           - primary
 
 permissions:

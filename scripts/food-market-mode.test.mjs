@@ -12,37 +12,45 @@ const primaryRules = `# Keep this comment
 /other-ministry https://example.org/other 307
 `;
 
-test('backup switches every visitor entry point and preserves attribution and unrelated rules', () => {
-  const result = switchMode(primaryRules, 'backup');
+for (const [mode, queue] of [['backup', 'https://qrq.app/q/dfska9L'], ['backup-old', 'https://qrq.app/107352']]) {
+test(`${mode} routes every entry point through the backup link with attribution`, () => {
+  const result = switchMode(primaryRules, mode);
   const originalLines = primaryRules.trimEnd().split('\n');
   const resultLines = result.trimEnd().split('\n');
   assert.equal(resultLines.length, originalLines.length);
   assert.equal(resultLines[0], originalLines[0]);
-  assert.equal(resultLines.at(-2), originalLines.at(-2));
+  assert.equal(resultLines.at(-2), `/food-market/backup ${queue} 302`);
   assert.equal(resultLines.at(-1), originalLines.at(-1));
   for (let i = 1; i <= 5; i++) {
     const [source, destination, status] = resultLines[i].split(' ');
     const [originalSource, originalDestination] = originalLines[i].split(' ');
-    const target = new URL(destination);
+    const target = new URL(destination, 'https://go.thebaycompassion.org');
     assert.equal(source, originalSource);
     assert.equal(status, '302');
-    assert.equal(target.origin + target.pathname, 'https://qrq.app/q/dfska9L');
+    assert.equal(destination.split('?')[0], '/food-market/backup');
     assert.equal(target.search, new URL(originalDestination).search);
   }
 });
+}
 
 test('recovery restores the flyer holding page and each original destination exactly', () => {
   assert.equal(switchMode(switchMode(primaryRules, 'backup'), 'primary'), primaryRules);
+  assert.equal(switchMode(switchMode(primaryRules, 'backup-old'), 'primary'), primaryRules);
 });
 
 test('repeated mode selections are safe', () => {
   assert.equal(switchMode(primaryRules, 'primary'), primaryRules);
-  const backupRules = switchMode(primaryRules, 'backup');
-  assert.equal(switchMode(backupRules, 'backup'), backupRules);
+  for (const mode of ['backup', 'backup-old']) {
+    const backupRules = switchMode(primaryRules, mode);
+    assert.equal(switchMode(backupRules, mode), backupRules);
+  }
+  assert.equal(switchMode(switchMode(primaryRules, 'backup-old'), 'backup'), switchMode(primaryRules, 'backup'));
+  assert.equal(switchMode(switchMode(primaryRules, 'backup'), 'backup-old'), switchMode(primaryRules, 'backup-old'));
 });
 
 test('rejects unknown modes and missing or duplicate managed paths', () => {
   assert.throws(() => switchMode(primaryRules, 'typo'), /Usage/);
   assert.throws(() => switchMode(primaryRules.replace('/food-market/card ', '/missing '), 'backup'), /Missing managed redirect/);
+  assert.throws(() => switchMode(primaryRules.replace('/food-market/backup ', '/missing '), 'backup-old'), /Missing managed redirect/);
   assert.throws(() => switchMode(`${primaryRules}/food-market https://example.org 302\n`, 'backup'), /Duplicate managed redirect/);
 });

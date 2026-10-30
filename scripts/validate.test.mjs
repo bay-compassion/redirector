@@ -20,6 +20,11 @@ test('accepts root and ministry links, comments, and URL query strings', (t) => 
   assert.equal(validate(root), 2);
 });
 
+test('accepts internal redirect chains with query strings and trailing slashes', (t) => {
+  const root = fixture(t, '/ /food-market?utm_source=test 302\n/food-market /food-market/backup/ 302\n/food-market/backup https://qrq.app/107352 302\n');
+  assert.equal(validate(root), 3);
+});
+
 for (const [name, rules, message] of [
   ['duplicate paths', '/x https://example.com 302\n/x/ https://example.org 302', /duplicate/],
   ['insecure destinations', '/x http://example.com 302', /HTTPS/],
@@ -28,6 +33,11 @@ for (const [name, rules, message] of [
   ['rewrite status', '/x https://example.com 200', /status/],
   ['wildcard paths', '/* https://example.com 302', /literal/],
   ['redirect loops', '/x https://go.thebaycompassion.org/x 302', /loops/],
+  ['internal self loops', '/x /x/?utm_source=test 302', /loops/],
+  ['internal chain loops', '/x /y 302\n/y /z 302\n/z /x 302', /loops/],
+  ['missing internal targets', '/x /missing 302', /missing internal/],
+  ['protocol-relative destinations', '/x //example.com 302', /literal root-relative/],
+  ['nonliteral internal destinations', '/x /food-market/../x 302', /literal root-relative/],
   ['empty rules', '# no rules', /active rule/],
   ['missing status', '/x https://example.com', /expected source/],
 ]) {
