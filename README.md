@@ -6,7 +6,7 @@ No package installation or build command is needed.
 ## Redirects
 
 Edit `public/_redirects`. Each active line contains a source path, a full
-destination URL, and a status code:
+destination URL or internal path, and a status code:
 
 ```text
 /food-market https://app.thebaycompassion.org 302
@@ -96,16 +96,33 @@ Netlify reference: https://docs.netlify.com/manage/routing/redirects/overview/
 
 ## Food-market failover
 
-The backup visitor destination is `https://qrq.app/q/dfska9L`.
+The backup visitor destinations are the new QRQ queue
+`https://qrq.app/q/dfska9L` and the old queue `https://qrq.app/107352`.
 Bookmark or encode `https://go.thebaycompassion.org/food-market/backup` for
-direct access to it. This permanent backup link always points to the backup
-service, regardless of the selected mode, and is available in the QR generator
+direct access to the selected backup queue. This permanent backup link is available in the QR generator
 as **Food market · backup visitor link**.
 
 Switching modes updates `/food-market`, `/food-market/flyer`,
 `/food-market/card`, `/food-market/placard`, and `/` together. QR codes keep
-their permanent URLs. Printed-source UTM parameters are retained on the backup
-URL, although the backup service may not record or forward them.
+their permanent URLs. In either backup mode, these links redirect to
+`/food-market/backup`, which redirects to the selected QRQ queue. For example:
+
+```text
+/food-market/card → /food-market/backup?utm_source=printed_card&… → QRQ
+```
+
+Printed-source UTM parameters are added on the first hop. Netlify automatically
+passes query parameters through the second 302 redirect; see
+[Netlify redirect options](https://docs.netlify.com/manage/routing/redirects/redirect-options/).
+The backup service may not record or forward those parameters.
+
+| Mode | Public entry points | `/food-market/backup` destination |
+| --- | --- | --- |
+| `primary` | Original app destinations | New queue: `https://qrq.app/q/dfska9L` |
+| `backup` | Via `/food-market/backup` | New queue: `https://qrq.app/q/dfska9L` |
+| `backup-old` | Via `/food-market/backup` | Old queue: `https://qrq.app/107352` |
+
+Selecting `primary` also resets the direct backup link to the new queue.
 
 ### One-time GitHub Actions setup
 
@@ -126,18 +143,19 @@ See [GitHub workflow triggers](https://docs.github.com/en/actions/how-tos/write-
 ### Switch using the button
 
 1. Open GitHub → Actions → **Switch food-market destination** → **Run workflow**.
-2. Leave the branch set to **main**. Choose **backup** during an app outage,
-   or **primary** to restore the normal destinations, then run the workflow.
+2. Leave the branch set to **main**. Choose **backup** for the new QRQ queue,
+   **backup-old** for the old QRQ queue, or **primary** to restore the normal
+   app destinations, then run the workflow.
 3. Check the workflow and Netlify deployment both succeed. The workflow commits
    the selected redirects, then requests a deployment; a successful workflow
    means the deployment was requested, not that the site is already updated.
 4. Check a live redirect, for example:
 
    ```sh
-   curl -I https://go.thebaycompassion.org/food-market/placard
+   curl -IL --max-redirs 5 https://go.thebaycompassion.org/food-market/placard
    ```
 
-   Confirm the `Location` header uses the selected destination and scan a QR
+   Confirm the `Location` headers follow the expected chain and scan a QR
    code to test the visitor flow. Recovery restores the flyer's `/holding` path.
 
 Runs are serialized to avoid competing mode switches. Selecting the current
@@ -151,6 +169,7 @@ deployment to become live.
 
 ```sh
 node scripts/food-market-mode.mjs backup
+node scripts/food-market-mode.mjs backup-old
 node scripts/food-market-mode.mjs primary
 ```
 
@@ -159,8 +178,8 @@ Run only the command for the mode you want. It validates and updates
 Normal destinations and attribution are defined in `scripts/food-market-mode.mjs`.
 Update that mapping when changing a primary destination or adding another
 food-market link that should switch modes, so recovery and failover continue to
-cover every entry point. Keep the permanent `/food-market/backup` link outside
-that mapping so it always reaches the backup service.
+cover every entry point. The separate backup-target mapping controls
+`/food-market/backup`, which always reaches a QRQ queue directly.
 This switch depends on GitHub and Netlify being available and does not move
 visitors who have already reached the app.
 
@@ -169,7 +188,7 @@ visitors who have already reached the app.
 GitHub Actions validates the site on pushes to `main`, every pull request, and
 manual runs. It checks the Netlify publish directory, the fallback page, and
 redirect rules (explicit paths, duplicate paths, HTTPS destinations, redirect
-status codes, and destinations pointing back to this redirector).
+status codes, missing internal redirect targets, and redirect loops).
 
 The validator is JavaScript using only Node.js built-ins. No package installation
 is needed. CI uses Node.js 24, recorded in `.nvmrc`.
@@ -181,7 +200,10 @@ node scripts/validate.mjs
 ```
 
 Rules currently support three fields only, with literal paths such as
-`/food-market` and external HTTPS destinations. Expand the validator if advanced
+`/food-market`, external HTTPS destinations, and root-relative destinations
+that resolve through other redirect rules. Internal chains are checked for
+missing targets and cycles; absolute URLs pointing back to this redirector
+remain disallowed. Expand the validator if advanced
 Netlify rules are needed. CI checks configuration without contacting destination
 sites; it does not deploy or gate Netlify's automatic deployments.
 The configuration check accepts only the minimal `[build]` / `publish = "public"`

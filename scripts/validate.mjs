@@ -20,6 +20,7 @@ export function validate(root, rules = readFileSync(join(root, 'public/_redirect
   }
 
   const sources = new Set();
+  const internalTargets = new Map();
   const lines = rules.split(/\r?\n/);
   for (const [index, raw] of lines.entries()) {
     const line = raw.trim();
@@ -39,6 +40,17 @@ export function validate(root, rules = readFileSync(join(root, 'public/_redirect
     }
     sources.add(normalized);
 
+    if (!['301', '302', '307', '308'].includes(status)) {
+      throw new Error(`${label}: expected status 301, 302, 307, or 308`);
+    }
+    if (destination.startsWith('/')) {
+      if (!/^\/(?:[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*\/?)?(?:\?[^#\s\\]*)?$/.test(destination)) {
+        throw new Error(`${label}: internal destination must be a literal root-relative path`);
+      }
+      const pathname = destination.split('?')[0];
+      internalTargets.set(normalized, pathname.replace(/\/$/, '') || '/');
+      continue;
+    }
     let target;
     try {
       target = new URL(destination);
@@ -48,15 +60,24 @@ export function validate(root, rules = readFileSync(join(root, 'public/_redirect
     if (!destination.startsWith('https://') || !target.hostname || target.username || target.password) {
       throw new Error(`${label}: destination must be a full HTTPS URL without credentials`);
     }
-    if (!['301', '302', '307', '308'].includes(status)) {
-      throw new Error(`${label}: expected status 301, 302, 307, or 308`);
-    }
     if (target.hostname === 'go.thebaycompassion.org') {
       throw new Error(`${label}: use an external destination to avoid redirect loops`);
     }
   }
   if (!sources.size) {
     throw new Error('public/_redirects must contain at least one active rule');
+  }
+  for (const [source, target] of internalTargets) {
+    if (!sources.has(target)) {
+      throw new Error(`${source}: missing internal redirect target ${target}`);
+    }
+    const visited = new Set();
+    let current = source;
+    while (internalTargets.has(current)) {
+      if (visited.has(current)) throw new Error(`${source}: internal redirect loops through ${current}`);
+      visited.add(current);
+      current = internalTargets.get(current);
+    }
   }
   return sources.size;
 }
