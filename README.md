@@ -36,7 +36,9 @@ Future sources can have their own explicit paths and destination parameters.
 ### Printed flyers
 
 Print or encode `https://go.thebaycompassion.org/food-market/flyer` on flyers.
-This currently redirects to `https://app.thebaycompassion.org/holding` with:
+The currently checked-in rule redirects to `https://app.thebaycompassion.org/holding`.
+Selecting `primary` moves it to the main app; selecting `holding` sends all
+food-market entry points to the holding page. Flyer attribution is retained:
 
 ```text
 utm_source=printed_flyer&utm_medium=offline&utm_campaign=food_market
@@ -118,11 +120,16 @@ The backup service may not record or forward those parameters.
 
 | Mode | Public entry points | `/food-market/backup` destination |
 | --- | --- | --- |
-| `primary` | Original app destinations | New queue: `https://qrq.app/q/dfska9L` |
+| `primary` | Main app: `https://app.thebaycompassion.org` | New queue: `https://qrq.app/q/dfska9L` |
+| `holding` | Holding page: `https://app.thebaycompassion.org/holding` | New queue: `https://qrq.app/q/dfska9L` |
 | `backup` | Via `/food-market/backup` | New queue: `https://qrq.app/q/dfska9L` |
 | `backup-old` | Via `/food-market/backup` | Old queue: `https://qrq.app/107352` |
 
-Selecting `primary` also resets the direct backup link to the new queue.
+Selecting `primary` or `holding` also resets the direct backup link to the new
+queue. Each mode preserves the printed-source attribution. Adding these modes
+does not change the checked-in redirects: run the workflow with `primary` when
+ready to launch the main app, or `holding` to send all public entry points to
+the holding page. No cutover is scheduled automatically.
 
 ### One-time GitHub Actions setup
 
@@ -144,8 +151,8 @@ See [GitHub workflow triggers](https://docs.github.com/en/actions/how-tos/write-
 
 1. Open GitHub → Actions → **Switch food-market destination** → **Run workflow**.
 2. Leave the branch set to **main**. Choose **backup** for the new QRQ queue,
-   **backup-old** for the old QRQ queue, or **primary** to restore the normal
-   app destinations, then run the workflow.
+   **backup-old** for the old QRQ queue, **primary** for the main app, or
+   **holding** for the holding page, then run the workflow.
 3. Check the workflow and Netlify deployment both succeed. The workflow commits
    the selected redirects, then requests a deployment; a successful workflow
    means the deployment was requested, not that the site is already updated.
@@ -156,7 +163,8 @@ See [GitHub workflow triggers](https://docs.github.com/en/actions/how-tos/write-
    ```
 
    Confirm the `Location` headers follow the expected chain and scan a QR
-   code to test the visitor flow. Recovery restores the flyer's `/holding` path.
+   code to test the visitor flow. `primary` sends every public entry point,
+   including flyers, to the main app; `holding` sends them to `/holding`.
 
 Runs are serialized to avoid competing mode switches. Selecting the current
 mode again requests another deployment without making an empty commit. If the
@@ -171,6 +179,7 @@ deployment to become live.
 node scripts/food-market-mode.mjs backup
 node scripts/food-market-mode.mjs backup-old
 node scripts/food-market-mode.mjs primary
+node scripts/food-market-mode.mjs holding
 ```
 
 Run only the command for the mode you want. It validates and updates
