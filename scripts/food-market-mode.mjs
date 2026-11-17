@@ -11,6 +11,8 @@ const backupTargets = {
 // Keep the main app destinations here so cutovers work after any number of switches.
 const primary = new Map([
   ['/food-market/flyer', 'https://app.thebaycompassion.org?utm_source=printed_flyer&utm_medium=offline&utm_campaign=food_market'],
+  ['/food-market/flyer-baypoint', 'https://app.thebaycompassion.org?utm_source=printed_flyer_baypoint&utm_medium=offline&utm_campaign=food_market'],
+  ['/food-market/website', 'https://app.thebaycompassion.org?utm_source=website&utm_medium=referral&utm_campaign=food_market'],
   ['/food-market/card', 'https://app.thebaycompassion.org?utm_source=printed_card&utm_medium=offline&utm_campaign=food_market'],
   ['/food-market/placard', 'https://app.thebaycompassion.org?utm_source=printed_placard&utm_medium=offline&utm_campaign=food_market'],
   ['/food-market', 'https://app.thebaycompassion.org'],
