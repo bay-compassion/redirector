@@ -36,9 +36,9 @@ Future sources can have their own explicit paths and destination parameters.
 ### Printed flyers
 
 Print or encode `https://go.thebaycompassion.org/food-market/flyer` on flyers.
-The currently checked-in rule redirects to `https://app.thebaycompassion.org/holding`.
-Selecting `primary` moves it to the main app; selecting `holding` sends all
-food-market entry points to the holding page. Flyer attribution is retained:
+In `primary` mode, the link redirects to `https://app.thebaycompassion.org`.
+Selecting `holding` sends all food-market entry points to the holding page.
+Both modes retain flyer attribution:
 
 ```text
 utm_source=printed_flyer&utm_medium=offline&utm_campaign=food_market
@@ -46,6 +46,16 @@ utm_source=printed_flyer&utm_medium=offline&utm_campaign=food_market
 
 This keeps flyer attribution separate from printed cards. Select
 **Food market · printed flyers** in the QR generator to download the flyer code.
+
+Use `https://go.thebaycompassion.org/food-market/flyer-baypoint` for Bay Point
+flyers. It follows the same mode switch and uses
+`utm_source=printed_flyer_baypoint&utm_medium=offline&utm_campaign=food_market`.
+
+### Website
+
+Use `https://go.thebaycompassion.org/food-market/website` on the website. It
+currently goes to the main app and uses
+`utm_source=website&utm_medium=referral&utm_campaign=food_market`.
 
 ### 3D-printed placards
 
@@ -105,7 +115,8 @@ direct access to the selected backup queue. This permanent backup link is availa
 as **Food market · backup visitor link**.
 
 Switching modes updates `/food-market`, `/food-market/flyer`,
-`/food-market/card`, `/food-market/placard`, and `/` together. QR codes keep
+`/food-market/flyer-baypoint`, `/food-market/website`, `/food-market/card`,
+`/food-market/placard`, and `/` together. QR codes keep
 their permanent URLs. In either backup mode, these links redirect to
 `/food-market/backup`, which redirects to the selected QRQ queue. For example:
 
@@ -113,7 +124,7 @@ their permanent URLs. In either backup mode, these links redirect to
 /food-market/card → /food-market/backup?utm_source=printed_card&… → QRQ
 ```
 
-Printed-source UTM parameters are added on the first hop. Netlify automatically
+Source UTM parameters are added on the first hop. Netlify automatically
 passes query parameters through the second 302 redirect; see
 [Netlify redirect options](https://docs.netlify.com/manage/routing/redirects/redirect-options/).
 The backup service may not record or forward those parameters.

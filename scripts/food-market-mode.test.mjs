@@ -4,6 +4,8 @@ import { switchMode } from './food-market-mode.mjs';
 
 const primaryRules = `# Keep this comment
 /food-market/flyer https://app.thebaycompassion.org?utm_source=printed_flyer&utm_medium=offline&utm_campaign=food_market 302
+/food-market/flyer-baypoint https://app.thebaycompassion.org?utm_source=printed_flyer_baypoint&utm_medium=offline&utm_campaign=food_market 302
+/food-market/website https://app.thebaycompassion.org?utm_source=website&utm_medium=referral&utm_campaign=food_market 302
 /food-market/card https://app.thebaycompassion.org?utm_source=printed_card&utm_medium=offline&utm_campaign=food_market 302
 /food-market/placard https://app.thebaycompassion.org?utm_source=printed_placard&utm_medium=offline&utm_campaign=food_market 302
 /food-market https://app.thebaycompassion.org 302
@@ -21,7 +23,7 @@ test(`${mode} routes every entry point through the backup link with attribution`
   assert.equal(resultLines[0], originalLines[0]);
   assert.equal(resultLines.at(-2), `/food-market/backup ${queue} 302`);
   assert.equal(resultLines.at(-1), originalLines.at(-1));
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i < originalLines.length - 2; i++) {
     const [source, destination, status] = resultLines[i].split(' ');
     const [originalSource, originalDestination] = originalLines[i].split(' ');
     const target = new URL(destination, 'https://go.thebaycompassion.org');
@@ -41,14 +43,14 @@ test('primary restores every main app destination from either backup queue', () 
 test('holding sends all entry points to the holding page with their attribution', () => {
   const result = switchMode(primaryRules, 'holding').trimEnd().split('\n');
   const original = primaryRules.trimEnd().split('\n');
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i < original.length - 2; i++) {
     const [source, destination, status] = result[i].split(' ');
     const [originalSource, originalDestination] = original[i].split(' ');
     assert.equal(source, originalSource);
     assert.equal(status, '302');
     assert.equal(destination, 'https://app.thebaycompassion.org/holding' + new URL(originalDestination).search);
   }
-  assert.deepEqual(result.slice(6), original.slice(6));
+  assert.deepEqual(result.slice(-2), original.slice(-2));
   assert.equal(result[0], original[0]);
 });
 
